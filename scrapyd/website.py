@@ -16,8 +16,10 @@ class Root(resource.Resource):
     def __init__(self, config, app):
         resource.Resource.__init__(self)
         self.debug = config.getboolean('debug', False)
+        # get runner class string, in this case, scrapd.runner
         self.runner = config.get('runner')
         logsdir = config.get('logs_dir')
+        # TODO what is items?
         itemsdir = config.get('items_dir')
         local_items = itemsdir and (urlparse(itemsdir).scheme.lower() in ['', 'file'])
         self.app = app

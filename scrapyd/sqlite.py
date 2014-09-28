@@ -153,7 +153,9 @@ class SqlitePriorityQueue(object):
 
 
 class PickleSqlitePriorityQueue(SqlitePriorityQueue):
-
+    """
+    For save objects into sqlite with cPickle to encode and decode.
+    """
     def encode(self, obj):
         return buffer(cPickle.dumps(obj, protocol=2))
 
@@ -162,7 +164,9 @@ class PickleSqlitePriorityQueue(SqlitePriorityQueue):
 
 
 class JsonSqlitePriorityQueue(SqlitePriorityQueue):
-
+    """
+    For save objects into sqlite with json encode and decode.
+    """
     def encode(self, obj):
         return json.dumps(obj)
 

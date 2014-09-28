@@ -58,6 +58,7 @@ def get_spider_queues(config):
     d = {}
     for project in get_project_list(config):
         dbpath = os.path.join(dbsdir, '%s.db' % project)
+        # TODO value is empty?
         d[project] = SqliteSpiderQueue(dbpath)
     return d
 
@@ -81,12 +82,16 @@ def get_crawl_args(message):
     that will be started for this message
     """
     msg = message.copy()
+    # add spider name to crawl
     args = [unicode_to_str(msg['_spider'])]
     del msg['_project'], msg['_spider']
     settings = msg.pop('settings', {})
+    # TODO what's in message?
     for k, v in stringify_dict(msg, keys_only=False).items():
+        # what's this?
         args += ['-a']
         args += ['%s=%s' % (k, v)]
+    # TODO what's in settings?
     for k, v in stringify_dict(settings, keys_only=False).items():
         args += ['-s']
         args += ['%s=%s' % (k, v)]
@@ -94,20 +99,26 @@ def get_crawl_args(message):
 
 def get_spider_list(project, runner=None, pythonpath=None):
     """Return the spider list from the given project, using the given runner"""
+    # TODO what's this? function is a object? has a __dict__ variable?
     if "cache" not in get_spider_list.__dict__:
         get_spider_list.cache = UtilsCache()
+    # try get spider list from cache
     try:
         return get_spider_list.cache[project]
     except KeyError:
         pass
+    # runner not provided, use default runner
     if runner is None:
         runner = Config().get('runner')
     env = os.environ.copy()
     env['SCRAPY_PROJECT'] = project
     if pythonpath:
         env['PYTHONPATH'] = pythonpath
+    # use runner to get spider list
     pargs = [sys.executable, '-m', runner, 'list']
+    # get spider list by running runner
     proc = Popen(pargs, stdout=PIPE, stderr=PIPE, env=env)
+    # get output
     out, err = proc.communicate()
     if proc.returncode:
         msg = err or out or 'unknown error'

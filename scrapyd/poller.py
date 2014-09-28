@@ -5,6 +5,9 @@ from .utils import get_spider_queues
 from .interfaces import IPoller
 
 class QueuePoller(object):
+    """
+    store spider queues in dq, and poll them every 5 seconds to running.
+    """
 
     implements(IPoller)
 
@@ -17,6 +20,7 @@ class QueuePoller(object):
     def poll(self):
         if self.dq.pending:
             return
+        # queues is spiders queues keyed by project name.
         for p, q in self.queues.iteritems():
             c = yield maybeDeferred(q.count)
             if c:
@@ -24,9 +28,11 @@ class QueuePoller(object):
                 returnValue(self.dq.put(self._message(msg, p)))
 
     def next(self):
+        # get next spider in queue.
         return self.dq.get()
 
     def update_projects(self):
+        # queues is spiders queues keyed by project name
         self.queues = get_spider_queues(self.config)
 
     def _message(self, queue_msg, project):

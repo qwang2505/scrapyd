@@ -12,6 +12,9 @@ from scrapyd import __version__
 from .interfaces import IPoller, IEnvironment
 
 class Launcher(Service):
+    """
+    Twisted service to launch spiders.
+    """
 
     name = 'launcher'
 
@@ -19,7 +22,9 @@ class Launcher(Service):
         self.processes = {}
         self.finished = []
         self.finished_to_keep = config.getint('finished_to_keep', 100)
+        # max process count.
         self.max_proc = self._get_max_proc(config)
+        # scrapyd runner, to run a single spider.
         self.runner = config.get('runner', 'scrapyd.runner')
         self.app = app
 
@@ -31,12 +36,22 @@ class Launcher(Service):
                 runner=self.runner, system='Launcher')
 
     def _wait_for_project(self, slot):
+        # get poller component.
         poller = self.app.getComponent(IPoller)
+        # get spider from component and start to run.
         poller.next().addCallback(self._spawn_process, slot)
 
     def _spawn_process(self, message, slot):
+        """
+        Spawn process to run specific spider.
+
+        TODO what is message?
+        """
         msg = stringify_dict(message, keys_only=False)
         project = msg['_project']
+        # TODO what is sys.executable?
+        # sys.executable is path of python interpreter, so just python.
+        # so args: python -m scrapyd.runner crawl
         args = [sys.executable, '-m', self.runner, 'crawl']
         args += get_crawl_args(msg)
         e = self.app.getComponent(IEnvironment)

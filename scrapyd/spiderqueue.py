@@ -9,6 +9,7 @@ class SqliteSpiderQueue(object):
     implements(ISpiderQueue)
 
     def __init__(self, database=None, table='spider_queue'):
+        # TODO but this queue is empty?
         self.q = JsonSqlitePriorityQueue(database, table)
 
     def add(self, name, **spider_args):

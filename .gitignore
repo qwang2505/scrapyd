@@ -7,3 +7,5 @@ docs/_build
 venv
 dist
 build
+*.xml
+*.iml

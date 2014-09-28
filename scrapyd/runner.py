@@ -30,6 +30,7 @@ def project_environment(project):
             os.remove(eggpath)
 
 def main():
+    # TODO will set this env before run a spider?
     project = os.environ['SCRAPY_PROJECT']
     with project_environment(project):
         from scrapy.cmdline import execute
